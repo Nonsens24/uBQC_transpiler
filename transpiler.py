@@ -24,6 +24,7 @@ def circuit_to_brickwork(circuit: Circuit):
     basis_gates = ['h', 't', 'cx']
     qc_decomposed = transpile(circuit, basis_gates=basis_gates, optimization_level=3)
     print(qc_decomposed)
+    commands = 0
 
 
     print("Commands: ", commands)
