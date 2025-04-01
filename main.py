@@ -1,3 +1,6 @@
+import networkx as nx
+from matplotlib import pyplot as plt
+
 import example_circuits.qft
 import visualiser
 
@@ -14,7 +17,7 @@ from QCompute.OpenService.service_ubqc.client.transpiler import transpile_to_bri
 from QCompute.OpenService.service_ubqc.client.qobject import Circuit
 from QCompute.OpenService.service_ubqc.client.mcalculus import MCalculus
 
-from visualiser import extract_graph_from_qcompute_circuit
+from visualiser import plot_brickwork_graph_from_pattern
 
 
 # from mbqc_transpiler.visualization import plot_cluster_state
@@ -28,24 +31,27 @@ def main():
     # env.backend(BackendName.LocalBaiduSim2)  # Local simulator
     # print("backend loaded")
 
+    n = 4
+
     # Create a 3-qubit circuit
-    circuit = Circuit(2)
+    circuit = Circuit(n)
 
     # Apply H gate to all qubits (needed for MBQC initialization)
-    for i in range(2):
+    for i in range(n):
         circuit.h(i)
 
     # Add more gates to build your algorithm
-    circuit.t(0)
-    circuit.t(0)
+    circuit.h(0)
     circuit.cnot([0, 1])
+    circuit.h(2)
+    circuit.cnot([3, 2])
 
-    circuit.h(1)
-    circuit.h(1)
 
     #This version doesn't support quantum outputs so has to measure in the end
     circuit.measure(0)
     circuit.measure(1)
+    circuit.measure(2)
+    circuit.measure(3)
 
 
     mc = MCalculus()
@@ -56,7 +62,12 @@ def main():
     mc.standardize()
     bw_pattern = mc.get_pattern()
 
+    for cmd in bw_pattern.commands:
+        if cmd.__class__.__name__ == "CommandE":
+            print(cmd.__dict__)
+            break
 
+    visualiser.plot_brickwork_graph_bfk_format(bw_pattern)
 
     # mc = MCalculus()
     #
