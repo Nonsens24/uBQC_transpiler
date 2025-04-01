@@ -1,5 +1,4 @@
 import numpy as np
-from graphix import Circuit
 
 def cp(circuit, theta, control, target):
     circuit.rz(control, theta / 2)
