@@ -1,6 +1,9 @@
 from QCompute.OpenService.service_ubqc.client.qobject import Circuit
 from QCompute import *
 
+from qiskit import QuantumCircuit
+from qiskit.quantum_info import Statevector
+
 
 def print_attributes_M(pattern):
     # See attributes
@@ -27,7 +30,50 @@ def print_attributes_C(pattern):
             print(cmd.__dict__)
 
 
-from QCompute import *
+def QCompute_circuit_to_qiskit_statevector(circuit):
+    """Convert QCompute UBQC-style Circuit to Qiskit circuit and simulate the state vector."""
+    n = circuit.get_width()
+    qc = QuantumCircuit(n)
+
+    for op in circuit.get_circuit():
+        name = op[0].lower()
+        qubits = op[1]
+
+        if name == 'h':
+            qc.h(qubits[0])
+        elif name == 'x':
+            qc.x(qubits[0])
+        elif name == 'y':
+            qc.y(qubits[0])
+        elif name == 'z':
+            qc.z(qubits[0])
+        elif name == 's':
+            qc.s(qubits[0])
+        elif name == 't':
+            qc.t(qubits[0])
+        elif name == 'sdg':
+            qc.sdg(qubits[0])
+        elif name == 'tdg':
+            qc.tdg(qubits[0])
+        elif name == 'rx':
+            qc.rx(op[2], qubits[0])
+        elif name == 'ry':
+            qc.ry(op[2], qubits[0])
+        elif name == 'rz':
+            qc.rz(op[2], qubits[0])
+        elif name == 'cnot':
+            qc.cx(qubits[0], qubits[1])
+        elif name == 'cz':
+            qc.cz(qubits[0], qubits[1])
+        elif name == 'm':
+            continue  # Skip measurement gates
+        else:
+            raise NotImplementedError(f"Unsupported gate: {name}")
+
+    # Simulate the final statevector
+    final_sv = Statevector.from_instruction(qc)
+    return qc, final_sv
+
 
 def apply_get_circuit_to_env(gate_list: list, qlist: list):
     """
