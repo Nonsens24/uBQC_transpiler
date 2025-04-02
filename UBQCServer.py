@@ -14,7 +14,8 @@ class UBQCServer:
         results = {}
         for cmd in self.pattern.commands:
             if cmd.__dict__['name'] == 'M':
-                i, j = cmd.__dict__['which_qubits'][0]
+                i, j = cmd.__dict__['which_qubit']
+                # print("ij = ", (i, j))
                 δ = deltas[(i, j)]
                 # Simulate outcome (realistic: use state backend)
                 outcome = random.randint(0, 1)  # replace with proper simulation if needed
